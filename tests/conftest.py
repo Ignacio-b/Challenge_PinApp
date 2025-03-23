@@ -1,15 +1,10 @@
 import pytest
 import requests
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 import os
 import logging
-import shutil
 from datetime import datetime
-import tempfile
-import random
 
 # Configuración del logging
 logging.basicConfig(
@@ -23,32 +18,14 @@ logging.basicConfig(
 
 @pytest.fixture(scope="function")
 def driver(request):
-    # Crear un directorio temporal único para cada test
-    temp_dir = tempfile.mkdtemp()
-    
     chrome_options = Options()
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--disable-notifications")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--disable-extensions")
-    chrome_options.add_argument("--disable-infobars")
-    chrome_options.add_argument(f"--user-data-dir={temp_dir}")
-    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options)
     driver.implicitly_wait(10)
     
     yield driver
-    
-    # Limpiar el directorio temporal después de cada test
-    try:
-        shutil.rmtree(temp_dir)
-    except Exception as e:
-        logging.error(f"Error al limpiar directorio temporal: {e}")
-    
     driver.quit()
 
 @pytest.fixture(scope="function")
