@@ -1,0 +1,1 @@
+# Este archivo hace que el directorio pages sea un paquete Python 
