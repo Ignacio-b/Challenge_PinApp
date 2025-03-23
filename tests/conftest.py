@@ -20,28 +20,21 @@ logging.basicConfig(
 
 @pytest.fixture(scope="function")
 def driver(request):
-    # Crear un directorio temporal único para los datos de usuario
-    temp_dir = f"/tmp/chrome_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    os.makedirs(temp_dir, exist_ok=True)
-    
     chrome_options = Options()
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--disable-notifications")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument(f"--user-data-dir={temp_dir}")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-infobars")
+    chrome_options.add_argument("--remote-debugging-port=9222")
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     
     driver = webdriver.Chrome(options=chrome_options)
     driver.implicitly_wait(10)
     
     yield driver
-    
-    # Limpiar el directorio temporal después de cada test
-    try:
-        shutil.rmtree(temp_dir)
-    except Exception as e:
-        logging.error(f"Error al limpiar directorio temporal: {e}")
-    
     driver.quit()
 
 @pytest.fixture(scope="function")
