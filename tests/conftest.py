@@ -7,6 +7,7 @@ import os
 import logging
 import shutil
 from datetime import datetime
+import random
 
 # Configuración del logging
 logging.basicConfig(
@@ -20,6 +21,9 @@ logging.basicConfig(
 
 @pytest.fixture(scope="function")
 def driver(request):
+    # Generar un puerto aleatorio entre 9222 y 9999
+    debug_port = random.randint(9222, 9999)
+    
     chrome_options = Options()
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--disable-notifications")
@@ -28,10 +32,11 @@ def driver(request):
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--disable-infobars")
-    chrome_options.add_argument("--remote-debugging-port=9222")
+    chrome_options.add_argument(f"--remote-debugging-port={debug_port}")
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     
-    driver = webdriver.Chrome(options=chrome_options)
+    service = Service()
+    driver = webdriver.Chrome(service=service, options=chrome_options)
     driver.implicitly_wait(10)
     
     yield driver
